@@ -10,41 +10,48 @@ const TutorialsList = (props) => {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [searchTitle, setSearchTitle] = useState("");
 
+
+  ////페이지 번호/////
+
+
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
   const [pageSize, setPageSize] = useState(3);
 
   const pageSizes = [3, 6, 9];
 
-  const onChangeSearchTitle = (e) => {
-    const searchTitle = e.target.value;
-    setSearchTitle(searchTitle);
-  };
 
+
+  //현재 상태의 검색창에 입력한 title 값, page, pagesize을 params 객체에 담아준다.
   const getRequestParams = (searchTitle, page, pageSize) => {
     let params = {};
-
+   
     if (searchTitle) {
-      params["title"] = searchTitle;
+      params.title = searchTitle; 
     }
 
     if (page) {
-      params["page"] = page - 1;
+      params.page = page - 1;
     }
 
     if (pageSize) {
-      params["size"] = pageSize;
+      params.size = pageSize;
     }
-
+    
     return params;
+    
   };
+  
 
+  //현재 상태 값을 담은 params 객체 데이터를 서버로 보내주어 처리한 데이터를 다시 받아옴
+  //받아온 데이터를 현재 상태  state의 리스트 값, 페이지의 conut 값으로 업데이트 해줌
   const retrieveTutorials = () => {
     const params = getRequestParams(searchTitle, page, pageSize);
-
+    
     TutorialDataService.getAll(params)
       .then((response) => {
-        const { tutorials, totalPages } = response.data;
+       const { tutorials, totalPages } = response.data;
+       
 
         setTutorials(tutorials);
         setCount(totalPages);
@@ -54,9 +61,36 @@ const TutorialsList = (props) => {
       .catch((e) => {
         console.log(e);
       });
+      
+  };
+  
+  //retrieveTutorials 변수 선언 아래에 와야함
+  useEffect(retrieveTutorials, [page, pageSize]);
+
+//이벤트 발생하면 받아온 값을 통해 state의 page 값 업데이트
+  const handlePageChange = (event, value) => {
+    setPage(value);
   };
 
-  useEffect(retrieveTutorials, [page, pageSize]);
+  //이벤트 발생하여 받아온 값을 보여주는 state의 페이지 갯수를 정해주는 pagesize 값을 업데이트 해주고
+  //동시에 state의 page 값 초기화 시켜줌.
+  const handlePageSizeChange = (event) => {
+    setPageSize(event.target.value);
+    setPage(1);
+  };
+
+
+
+
+
+
+  
+/////리스트 목록//////
+
+  const onChangeSearchTitle = (e) => {
+    const searchTitle = e.target.value;
+    setSearchTitle(searchTitle);
+  };
 
   const refreshList = () => {
     retrieveTutorials();
@@ -102,18 +136,13 @@ const TutorialsList = (props) => {
   }
 };
 
-const create = () => {
+  const create = () => {
   props.history.push("/add")
- };
-
-  const handlePageChange = (event, value) => {
-    setPage(value);
   };
 
-  const handlePageSizeChange = (event) => {
-    setPageSize(event.target.value);
-    setPage(1);
-  };
+  
+
+
 
   return (
     <div className="list row">
@@ -152,11 +181,11 @@ const create = () => {
 
           <Pagination
             className="my-3"
+            color="primary"
             count={count}
             page={page}
             siblingCount={1}
             boundaryCount={1}
-            variant="outlined"
             shape="rounded"
             onChange={handlePageChange}
           />

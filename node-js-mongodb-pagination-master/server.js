@@ -2,19 +2,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-const app = express();
 
+
+const app = express();
 var corsOptions = {
   origin: "http://localhost:8081"
 };
-
 app.use(cors(corsOptions));
 
-// parse requests of content-type - application/json
-app.use(bodyParser.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
+
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
 
 //DB URI이 연결되었는지 확인해줌
 const config = require('./app/config/key');
@@ -24,10 +25,15 @@ mongoose.connect(config.mongoURI, {
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
 
-// simple route
+
+
+
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to bezkoder application." });
 });
+
+
+
 
 require("./app/routes/turorial.routes")(app);
 
@@ -48,6 +54,10 @@ app.get('/', (req, res) => res.send('Hello World!~~ '))
 
 app.get('/api/hello', (req, res) => res.send('Hello World!~~ '))
 
+
+
+
+
 app.post('/api/users/register', (req, res) => {
 
   //회원 가입 할떄 필요한 정보들을  client에서 가져오면 
@@ -61,6 +71,8 @@ app.post('/api/users/register', (req, res) => {
     })
   })
 })
+
+
 
 app.post('/api/users/login', (req, res) => {
 
@@ -99,6 +111,8 @@ app.post('/api/users/login', (req, res) => {
 })
 
 
+
+
 // role 1 어드민    role 2 특정 부서 어드민 
 // role 0 -> 일반유저   role 0이 아니면  관리자 
 app.get('/api/users/auth', auth, (req, res) => {
@@ -115,6 +129,9 @@ app.get('/api/users/auth', auth, (req, res) => {
   })
 })
 
+
+
+
 app.get('/api/users/logout', auth, (req, res) => {
   // console.log('req.user', req.user)
   User.findOneAndUpdate({ _id: req.user._id },
@@ -129,7 +146,8 @@ app.get('/api/users/logout', auth, (req, res) => {
 
 
 
-// set port, listen for requests
+
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);

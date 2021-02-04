@@ -1,13 +1,6 @@
 const db = require("../models");
 const Tutorial = db.tutorials;
 
-const getPagination = (page, size) => {
-  const limit = size ? +size : 3;
-  const offset = page ? page * limit : 0;
-
-  return { limit, offset };
-};
-
 // Create and Save a new Tutorial
 exports.create = (req, res) => {
   // Validate request
@@ -37,6 +30,14 @@ exports.create = (req, res) => {
     });
 };
 
+
+const getPagination = (page, size) => {
+  const limit = size ? +size : 3;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+
 // Retrieve all Tutorials from the database.
 exports.findAll = (req, res) => {
   const { page, size, title } = req.query;
@@ -52,7 +53,7 @@ exports.findAll = (req, res) => {
         totalItems: data.totalDocs,
         tutorials: data.docs,
         totalPages: data.totalPages,
-        currentPage: data.page - 1,
+        currentPage: data.page - 1
       });
     })
     .catch((err) => {
